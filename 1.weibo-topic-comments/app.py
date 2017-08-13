@@ -18,6 +18,7 @@ def write_mid (mid):
     with open("mid.txt","a") as file :
         file.write(mid+"\n")
 class weibo:
+
     def __init__(self,username,password):
         self.session = requests.session()
         self.username = username
@@ -26,9 +27,12 @@ class weibo:
         self.Userlogin()
     def Userlogin(self,pagecount=1):
         #登录微博
+        get_Header = {
+                      "User-Agent": "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36"
+                      }
         url_prelogin='http://login.sina.com.cn/sso/prelogin.php?entry=weibo&callback=sinaSSOController.preloginCallBack&su=&rsakt=mod&client='
         url_login='http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.5)'
-        resp=self.session.get(url_prelogin)
+        resp=self.session.get(url_prelogin,headers=get_Header)
         json_data=re.findall(r'(?<=\().*(?=\))',resp.text)[0]
         data=json.loads(json_data)
         servertime=data['servertime']
@@ -60,14 +64,14 @@ class weibo:
             'returntype':'META',
             'rsakv':rsakv,
             }
-        resp=self.session.post(url_login,data=postdata)
+        resp=self.session.post(url_login,data=postdata,headers=get_Header)
         login_url=re.findall(r'http://weibo.*&retcode=0',resp.text)
         try:
-            respo = self.session.get(login_url[0])
+            respo = self.session.get(login_url[0],headers=get_Header)
             uid = re.findall('"uniqueid":"(\d+)",', respo.text)[0]
             self.uid=uid
             url = "http://weibo.com/u/" + uid
-            respo = self.session.get(url).text
+            respo = self.session.get(url,headers=get_Header).text
             print ("登录成功 uid:%s" %uid)
         except IndexError:
             print ("登录失败 环境不允许使用\n(如果手动登录时需要验证码则本程序无法使用，请在无需验证码的登录环境下使用)")
@@ -84,16 +88,16 @@ class weibo:
         print(return_re[0])
     def run_good(self,topic_id,content="[抱抱]",run_time=10):
         url = "http://weibo.com/p/%s/super_index" % topic_id
+        get_Header ={
+            "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Encoding":"gzip, deflate, sdch",
+            "Accept-Language":"zh-CN,zh;q=0.8",
+            "Host":"weibo.com",
+            "Proxy-Connection":"keep-alive",
+            "Upgrade-Insecure-Requests":"1",
+            "User-Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36"
+        }
         while True:
-            get_Header={"Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-                        "Accept-Encoding":"gzip, deflate, sdch",
-                        "Accept-Language":"zh-CN,zh;q=0.8",
-                        "Cache-Control":"max-age=0",
-                        "Connection":"keep-alive",
-                        "Host":"weibo.com",
-                        "Upgrade-Insecure-Requests":"1",
-                        "User-Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36"
-                        }
             data = self.session.get(url,headers=get_Header).text
             return_re = re.findall(r'<script>FM.view(.+?)</script>', data)
             return_txt = return_re[-1]
@@ -138,8 +142,8 @@ class weibo:
                         print ("已经回复：" + mid)
                         write_mid(mid)
                     else:
-                        print ("回复失败，请检测登录状态")
-                    time.sleep(3)
+                        print ("回复失败:" + data['msg'])
+                    time.sleep(5)
             except KeyError:
                 print ("访问错误")
             time.sleep(run_time)
