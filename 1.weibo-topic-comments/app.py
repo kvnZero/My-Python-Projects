@@ -6,6 +6,7 @@ import binascii
 import rsa
 import time
 import os
+from PIL import Image
 
 
 def find_mid(mid):
@@ -19,13 +20,37 @@ def write_mid (mid):
         file.write(mid+"\n")
 class weibo:
 
-    def __init__(self,username,password):
+    def __init__(self, username, password):
         self.session = requests.session()
         self.username = username
         self.password = password
         self.uid = ""
-        self.Userlogin()
-    def Userlogin(self,pagecount=1):
+        self.pcid = ""
+        self.code = ""
+    def get_code_image(self, pcid):
+        get_Header = {
+                      "User-Agent": "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36"
+                      }
+        self.pcid = pcid
+        image = self.session.get("https://login.sina.com.cn/cgi/pin.php?r=62210336&s=0&p=" + pcid,headers = get_Header).content
+        return image
+    def get_code(self):
+        get_Header = {
+                      "User-Agent": "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36"
+                      }
+        su = base64.b64encode(self.username.encode(encoding="utf-8"))
+        get_url = "https://login.sina.com.cn/sso/prelogin.php?entry=weibo&callback=sinaSSOController.preloginCallBack&su=%s&rsakt=mod&checkpin=1&client=ssologin.js(v1.4.19)&_=1502779202863" % su.decode("utf-8")
+        date_txt = self.session.get(get_url,headers = get_Header).text
+        showpin_re = re.findall(r'showpin":(.+?),',date_txt)
+        showpin = showpin_re[0]
+        if showpin == "1":
+            pcid_re = re.findall(r'"pcid":"(.+?)"',date_txt)
+            return pcid_re[0]
+        else:
+            return 0
+    def set_code(self, code):
+        self.code = code
+    def user_login(self, pagecount=1):
         #登录微博
         get_Header = {
                       "User-Agent": "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36"
@@ -64,6 +89,9 @@ class weibo:
             'returntype':'META',
             'rsakv':rsakv,
             }
+        if self.code !="" and self.pcid !="" :
+            postdata['pcid'] = self.pcid
+            postdata['door'] = self.code
         resp=self.session.post(url_login,data=postdata,headers=get_Header)
         login_url=re.findall(r'http://weibo.*&retcode=0',resp.text)
         try:
@@ -74,19 +102,9 @@ class weibo:
             respo = self.session.get(url,headers=get_Header).text
             print ("登录成功 uid:%s" %uid)
         except IndexError:
-            print ("登录失败 环境不允许使用\n(如果手动登录时需要验证码则本程序无法使用，请在无需验证码的登录环境下使用)")
+            print ("登录失败\n验证码错误或其他原因")
             os._exit(0)
-    def Gettopic(self,topic_id):
-        url = "http://weibo.com/p/%s/super_index" % topic_id
-        data  = self.session.get(url).text
-        return_re = re.findall(r'<script>FM.view(.+?)</script>',data)
-        return_txt = return_re[-1]
-        return_txt = return_txt[1:-1]
-        html_json = json.loads(return_txt)
-        html = html_json['html']
-        return_re = re.findall(r'value=pubuser_head:(\d+)\"',str(html))
-        print(return_re[0])
-    def run_good(self,topic_id,content="[抱抱]",run_time=10):
+    def run_good(self, topic_id, content= "[抱抱]", run_time= 10):
         url = "http://weibo.com/p/%s/super_index" % topic_id
         get_Header ={
             "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
@@ -152,11 +170,19 @@ if __name__ == "__main__":
     username = input("Username:")
     password = input("Password:")
     ouhuang = weibo(username,password)
+    iscode = ouhuang.get_code()
+    if iscode != 0:
+        with open("code.png","wb") as file:
+            file.write (ouhuang.get_code_image(iscode))
+        code_image = Image.open("code.png").show()
+        code = input("Code :")
+        ouhuang.set_code(code)
+    ouhuang.user_login()
     topic_id = input("Topic_ID :")
     content = input("Content([抱抱]):")
-    runtime = input("Runtime(10):")
+    runtime = input("Runtime(60):")
     if runtime == "":
-        runtime = 10
+        runtime = 60
     if content == "":
         content = "[抱抱]"
     ouhuang.run_good(topic_id,content,int(runtime))
