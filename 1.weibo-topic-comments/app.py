@@ -1,3 +1,4 @@
+#coding=utf8
 import requests
 import base64
 import re
