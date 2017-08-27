@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+<title>饭桶的学习笔记</title>
+</head>
+<body>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td></br>
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<h3>
+				饭桶的笔记
+			</h3>
+		</div>
+	</div>
+</div></td>
+  </tr>
+  <tr>
+    <td></br></br></br>
+        {% block content %}
+        {% endblock %}
+  <tr>
+    <td></br></br></br>
+<hr/>
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<div class="row clearfix">
+				<div class="col-md-8 column">
+					<blockquote>
+						<p>
+							思考一切（Think about everything）。
+						</p> <small>思想家 <cite>马克思(Marxism)</cite></small>
+					</blockquote>
+				</div>
+				<div class="col-md-4 column">
+					 <address> <strong>GitHub, <a href="https://github.com/sohyunQVQ">sohyunQVQ</a></strong><br />email: abigeater@163.com<br />Powered by Bootstrap <br />
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<hr/></br></br></td>
+  </tr>
+</table>
+      <script src="https://code.jquery.com/jquery.js"></script>
+</body>
+</html>
+
