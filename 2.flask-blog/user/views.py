@@ -1,6 +1,12 @@
 from user import app
 from flask import render_template,request
 from user.sqlite import Essay
+import re
+
+@app.template_filter('change_summary')
+def change_summary(l):
+    content = re.sub('(<img.+?>)', '[图片]',l)
+    return content[0:126]
 
 @app.route('/')
 @app.route('/page/<page>/')

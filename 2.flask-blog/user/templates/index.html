@@ -11,9 +11,9 @@
 					</h2>
 					<p>
 						{% if(essay.essay_summary) %}
-							{{ essay.essay_summary }}
+							{{ essay.essay_summary | safe}}
 						{% else %}
-							{{ essay.essay_content }}
+							{{ essay.essay_content | change_summary }}
 						{% endif %}
 					</p>
 					<p>
