@@ -33,7 +33,7 @@
 					 <a href="/class/php/"> <span class="badge pull-right">{{ phpamount }}</span> PHP</a>
 				</li>
                 <li {% if (choose == 'python') %}class="active" {% endif %}>
-					 <a href="/class/php/"> <span class="badge pull-right">{{ pythonamount }}</span> Python</a>
+					 <a href="/class/python/"> <span class="badge pull-right">{{ pythonamount }}</span> Python</a>
 				</li>
 			</ul>
             </br>
@@ -54,9 +54,15 @@
 						<li>
 							 <a href="{{ url_for('index') }}">首页</a>
 						</li>
+						{% for page in page_number %}
 						<li>
-							<a href="/page/1/">1</a>	
+							{% if(choose == 'all') %}
+								<a href="/page/{{ page+1 }}/">{{ page+1 }}</a>	
+							{% else %}
+							<a href="/class/{{ choose }}/page/{{ page+1 }}/">{{ page+1 }}</a>								
+							{% endif %}
 						</li>
+						{%  endfor%}
 					</ul>
 				</div>
 			</div>
