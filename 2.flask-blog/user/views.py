@@ -5,7 +5,8 @@ from wtforms import TextAreaField, SelectField
 from wtforms import StringField, SubmitField
 from wtforms.validators import Required
 from user.sqlite import Essay
-import re
+from user.sqlite import db
+import time, re
 
 app.config['SECRET_KEY'] = "abigeater"
 app.config['Admin_username'] = "abigeater"
@@ -16,7 +17,7 @@ class EssayForm(Form):
     essay_summary = TextAreaField('文章摘要')
     essay_class = SelectField('文章分类', choices=[('other','不分类'),('python','python'),('php','php')])
     essay_content = TextAreaField('文章内容')
-    submit = SubmitField('发布文章')
+    submit = SubmitField('发布(编辑)文章')
 
 @app.template_filter('change_summary')
 def change_summary(l):
@@ -64,12 +65,36 @@ def admin(username,password):
         return render_template('adminuse.html')
 
 @app.route('/admin/<username>/<password>/pushessay/', methods=['GET', 'POST'])
-def pushessay(username,password):
+@app.route('/admin/<username>/<password>/editessay/<id>/', methods=['GET', 'POST'])
+def pushessay(username,password,id=0):
     if username != app.config['Admin_username'] or password != app.config['Admin_password']:
         return "Error Get.!"
     else:
         form = EssayForm()
-        return_content = ""
+        return_content = "正在发布(编辑)文章！"
+        if id !=0 :
+            essay = Essay.query.filter_by(id=id).first()
+            form.essay_title.data = essay.essay_title
+            form.essay_class.data = essay.essay_class 
+            form.essay_summary.data = essay.essay_summary
+            form.essay_content.data = essay.essay_content
+
         if form.essay_title.data != None:
-            name = form.essay_title.data
-        return render_template('pushessay.html',form = form, return_content = return_content)
+            if id == 0: 
+                essay = Essay()
+
+            essay.essay_title = form.essay_title.data
+            essay.essay_class = form.essay_class.data
+            essay.essay_summary = form.essay_summary.data
+            essay.essay_content = form.essay_content.data
+            essay.essay_time = time.strftime("%Y-%m-%d", time.localtime())
+
+            if id == 0: 
+                db.session.add(essay)
+                return_content = "发布完成,请不要使用F5刷新导致重复发布！"
+            else:
+                return_content = "编辑完成,请不要使用F5刷新导致重复编辑！"
+
+            db.session.commit() 
+            
+        return render_template('pushessay.html',form = form,)
