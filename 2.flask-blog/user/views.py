@@ -72,12 +72,9 @@ def pushessay(username,password,id=0):
     else:
         form = EssayForm()
         return_content = "正在发布(编辑)文章！"
-        if id !=0 :
+        if id != 0:
             essay = Essay.query.filter_by(id=id).first()
-            form.essay_title.data = essay.essay_title
-            form.essay_class.data = essay.essay_class 
-            form.essay_summary.data = essay.essay_summary
-            form.essay_content.data = essay.essay_content
+
 
         if form.essay_title.data != None:
             if id == 0: 
@@ -96,5 +93,8 @@ def pushessay(username,password,id=0):
                 return_content = "编辑完成,请不要使用F5刷新导致重复编辑！"
 
             db.session.commit() 
-            
-        return render_template('pushessay.html',form = form,)
+        form.essay_title.data = essay.essay_title
+        form.essay_class.data = essay.essay_class 
+        form.essay_summary.data = essay.essay_summary
+        form.essay_content.data = essay.essay_content
+        return render_template('pushessay.html',form = form,return_content = return_content)
