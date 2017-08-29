@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 co namme lumn">
+                <div class="alert alert-success alert-dismissable">
+                    {% if(return_content) %}
+                        {{ return_content }}
+                    {% else %}
+                        正在发布文章～
+                    {% endif %}
+                </div>
+                <form method="POST">
+                <label class="content_left">文章标题：</label>
+                {{ form.essay_title (style="width: 225px") }}
+                <br>
+                <br>
+                <label class="content_left">文章摘要（可以留空，留空取内容的63个字符）：</label><br>
+                {{ form.essay_summary (style="width:300px;height:80px") }}
+                <br>
+                <br>
+                <label class="content_left">文章分类：</label>
+                {{ form.essay_class (class="btn",style="font-size:14px") }}
+                <br>
+                <br>
+                <label class="content_left">文章内容（用Mrakdown格式编写）：</label><br>
+                {{ form.essay_content (style="width:500px;height:200px") }}
+                <br>
+                <br>
+                <br>
+                {{ form.submit(class="btn") }}
+                </form>
+        </div>
+	</div>
+</div>
+
+
+{% endblock %}
