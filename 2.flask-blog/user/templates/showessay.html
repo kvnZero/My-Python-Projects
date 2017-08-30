@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+	<div class="container">
+		<div class="row clearfix">
+			<div class="col-md-12 column">
+				<h3>
+					文章管理
+				</h3>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>
+								编号
+							</th>
+							<th>
+								标题
+							</th>
+							<th>
+								时间
+							</th>
+							<th>
+								分类
+							</th>
+							<th>
+								操作
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+                        {% for essay in Essay %}
+													<tr>
+									<td>
+										{{ essay.id }}									</td>
+									<td>
+                                            {{ essay.essay_title }}										</td>
+									<td>
+                                            {{ essay.essay_time }}										</td>
+									<td>
+                                            {{ essay.essay_class }}										</td>
+									<td>
+										<a href="edit/{{ essay.id }}">编辑</a>
+										
+										<a href="delete/{{ essay.id }}">删除</a>
+									</td>
+                                </tr>
+                                {% endfor %}
+										</tbody>
+				</table>
+			</div>
+		</div>
+    </div>
+    {% endblock %}

@@ -1,5 +1,5 @@
 from user import app
-from flask import render_template,request
+from flask import render_template,request,redirect,url_for
 from flask_wtf import Form
 from wtforms import TextAreaField, SelectField
 from wtforms import StringField, SubmitField
@@ -65,7 +65,7 @@ def admin(username,password):
         return render_template('adminuse.html')
 
 @app.route('/admin/<username>/<password>/pushessay/', methods=['GET', 'POST'])
-@app.route('/admin/<username>/<password>/editessay/<id>/', methods=['GET', 'POST'])
+@app.route('/admin/<username>/<password>/showessay/edit/<id>', methods=['GET', 'POST'])
 def pushessay(username,password,id=0):
     if username != app.config['Admin_username'] or password != app.config['Admin_password']:
         return "Error Get.!"
@@ -99,3 +99,17 @@ def pushessay(username,password,id=0):
             form.essay_summary.data = essay.essay_summary
             form.essay_content.data = essay.essay_content
         return render_template('pushessay.html',form = form,return_content = return_content)
+
+@app.route('/admin/<username>/<password>/showessay/')
+@app.route('/admin/<username>/<password>/showessay/delete/<id>')
+def showessay(username,password,id=0):
+    if username != app.config['Admin_username'] or password != app.config['Admin_password']:
+        return "Error Get.!"
+    else:
+        if id != 0 :
+            essay = Essay.query.filter_by(id=id).first()
+            db.session.delete(essay)
+            db.session.commit()
+            return redirect(url_for('showessay',username=username,password=password)) 
+        Essays = Essay.query.order_by(Essay.id.desc()).all()
+        return render_template('showessay.html',Essay = Essays)
