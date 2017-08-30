@@ -93,8 +93,9 @@ def pushessay(username,password,id=0):
                 return_content = "编辑完成,请不要使用F5刷新导致重复编辑！"
 
             db.session.commit() 
-        form.essay_title.data = essay.essay_title
-        form.essay_class.data = essay.essay_class 
-        form.essay_summary.data = essay.essay_summary
-        form.essay_content.data = essay.essay_content
+        if id != 0:
+            form.essay_title.data = essay.essay_title
+            form.essay_class.data = essay.essay_class 
+            form.essay_summary.data = essay.essay_summary
+            form.essay_content.data = essay.essay_content
         return render_template('pushessay.html',form = form,return_content = return_content)
