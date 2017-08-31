@@ -6,8 +6,9 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import Required
 from user.sqlite import Essay
 from user.sqlite import db
+from flaskext.markdown import Markdown
 import time, re
-
+Markdown(app)
 app.config['SECRET_KEY'] = "abigeater"
 app.config['Admin_username'] = "abigeater"
 app.config['Admin_password'] = "xusong"
