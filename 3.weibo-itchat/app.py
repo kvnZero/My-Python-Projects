@@ -129,7 +129,7 @@ class Weibo():
 def text_reply(msg):
     if msg['User']['UserName']=="filehelper":
         wechatText = msg['Text']
-        weiboText_re = re.findall(r'发微博：(.*)',wechatText)
+        weiboText_re = re.findall(r'发微博:(.*)',wechatText)
         weiboText=""
         if weiboText_re!=[]:
             weiboText = weiboText_re[0]
