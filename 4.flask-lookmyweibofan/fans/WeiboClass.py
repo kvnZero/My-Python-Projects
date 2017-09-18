@@ -1,15 +1,21 @@
 import requests, re, base64, json, binascii, rsa
 from bs4 import BeautifulSoup
 
+
 class Weibo():
-    def __init__(self, username, password):
+    def __init__(self):
         print("Weclome to use Weibo.Class")
         self.uid = ""
-        self.username = username
-        self.password = password
+        self.username = ""
+        self.password = ""
         self.pcid = ""
         self.code = ""
         self.session = requests.session()
+        self.users_data={}
+
+    def setuser(self, username, password):
+        self.username = username
+        self.password = password
 
     def checkCode(self):
         '''
@@ -25,6 +31,9 @@ class Weibo():
         if showpin_re[0] == '"showpin":0':
             pcid_re = re.findall(r'"pcid":"(.+?)"', data_txt)
             self.pcid = pcid_re[0]
+            return self.pcid
+        else:
+            return 0
 
     def getCode(self):
         '''
@@ -114,13 +123,14 @@ class Weibo():
                    "Upgrade-Insecure-Requests":"1",
                    "User-Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36"}
         #maxpage = int(re.findall(r'Pl_Official_RelationFans__88_page=(.+?)#',self.session.get(get_url,headers=Headers).text)[-2])
-        maxpage=1
-        users_data={}
+        maxpage, number  = 1, 1
+
         for page in range(1, maxpage + 1):
             get_url = "http://weibo.com/%s/fans?pids=Pl_Official_RelationFans__88&relate=fans&t=1&f=1&type=&Pl_Official_RelationFans__88_page=%i&ajaxpagelet=1&ajaxpagelet_v6=1" % (self.uid,page)
             data_json = json.loads(re.findall(r'view\((.*)\)', self.session.get(get_url, headers=Headers).text)[0])
             soup = BeautifulSoup(data_json['html'], "html.parser")
             for users in soup.find_all("dd", class_="mod_info S_line1"):
+                user = []
                 a = str(users.find_all("a"))
                 username = re.findall(r'title="(.+?)"', a)[0]
                 userid = re.findall(r'id=(.+?)&', a)[0]
@@ -129,6 +139,16 @@ class Weibo():
                 weibo = re.findall(r'>(.+?)</a>', a)[4]
                 address = str(users.find("div", class_="info_add").text)[2:]
                 byfrom = str(users.find("a", class_="S_link2").text)
+                user.append(username)
+                user.append(userid)
+                user.append(follow)
+                user.append(fans)
+                user.append(weibo)
+                user.append(address)
+                user.append(byfrom)
+                self.users_data[number] = user
+                number += 1
+        return number
 
     def showFans(self, **kwargs):
         '''
@@ -141,9 +161,32 @@ class Weibo():
             byfrom = "微博推荐"
         :return list:
         '''
+        users_data = self.users_data.copy()
+        if len(self.users_data) == 0 :
+            return users_data
+        else:
+            for i in self.users_data:
+                if kwargs.get("follow") is not None:
+                    if users_data[i][2] < kwargs.get("follow"):
+                        users_data.pop(i)
+                if kwargs.get("fans") is not None:
+                    if users_data[i][3] < kwargs.get("fans"):
+                        users_data.pop(i)
+                if kwargs.get("weibo") is not None:
+                    if users_data[i][4] < kwargs.get("weibo"):
+                        users_data.pop(i)
+                if kwargs.get("address") is not None:
+                    if users_data[i][5] == kwargs.get("address"):
+                        users_data.pop(i)
+                if kwargs.get("byfrom") is not None:
+                    if users_data[i][6] == kwargs.get("byfrom"):
+                        users_data.pop(i)
+            return users_data
 
 
-if __name__ == "__main__":
-    weibo = Weibo("13516673902","llkilwj")
-    weibo.loginWeibo()
-    weibo.getFans()
+#if __name__ == "__main__":
+#    weibo = Weibo()
+#    weibo.setuser("13516673902","llkilwj")
+#    weibo.loginWeibo()
+#    weibo.getFans()
+#    weibo.showFans(fans = 100, weibo = 5, byfrom ="微博推荐", address="其他")

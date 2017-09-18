@@ -1,0 +1,51 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{{ wtf.quick_form(form) }}
+{% block title %}Login Weibo{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <form method="POST" class="form-inline">
+            <div class="form-group">
+                {{ form.username.label }}{{ form.username(class='form-control') }}
+            </div><br><br>
+            <div class="form-group">
+                {{ form.password.label }}{{ form.password(class='form-control') }}
+            </div><br><br>
+            <div class="form-group">
+                {{ form.code.label }}{{ form.code(class='form-control', style='width: 70px') }}
+               &nbsp; <img id="codeimages" alt="code pic" src="http://www.baidu.com">
+            </div><br><br>
+            {{ form.submit(class='btn btn-default',style='width: 270px') }}
+        </form>
+        <hr>
+        <ol>
+            <li>
+                This is a show fans site.
+            </li>
+            <li>
+                You can filter show you fans~
+            </li>
+            <li>
+                if login time show code then need input code.
+            </li>
+        </ol>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+$('#username').blur(function (){
+    var username = $('#username').val();
+    if (username != '') {
+        $.get("/ajax/getcode/"+username+"/",function(data){
+            if(data != 0){
+                $('#codeimages').src("getcode/");
+            }
+        })
+    }
+})
+</script>
+{% endblock %}
