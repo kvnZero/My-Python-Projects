@@ -1,5 +1,5 @@
 from . import app
-from flask import render_template,request,redirect,url_for
+from flask import render_template,redirect
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField
 from wtforms.validators import InputRequired
@@ -12,23 +12,24 @@ class LoginForm(FlaskForm):
     code = StringField('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Code:', validators=[InputRequired()])
     submit = SubmitField('Login Weibo')
 
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = LoginForm()
-    uid = None
+    uid, alerttext = None, None
     if form.username.data != None and form.password.data != None:
         weibo.setuser(form.username.data, form.password.data)
         if form.code.data != "":
             weibo.setCode(form.code.data)
         uid = weibo.loginWeibo()
-
-    if uid == None:
-        alerttext = "username or password or code is error"
-    else:
-        alerttext = "login success"
-
-    return render_template('login.html', form = form, alerttext = alerttext)
+    form.username.data = ""
+    form.password.data = ""
+    form.code.data = ""
+    if uid != None:
+        if uid == 0:
+            alerttext = "username, password or code is error"
+            return render_template('login.html', form=form, alerttext=alerttext)
+        else:
+            return redirect("/getfans/")
 
 @app.route('/ajax/getcode/<username>/')
 def getcode(username):
@@ -45,3 +46,11 @@ def getcodeimg():
     except ValueError:
         return ""
 
+@app.route('/getfans/')
+def getfans():
+    weibo.getFans()
+    return redirect("/showfans/")
+
+@app.route('/showfans/')
+def showfans():
+    return str(weibo.showFans())
