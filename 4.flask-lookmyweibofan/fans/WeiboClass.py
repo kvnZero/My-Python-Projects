@@ -183,6 +183,8 @@ class Weibo():
                         users_data.pop(i)
             return users_data
 
+    def setCode(self, code):
+        self.code = code
 
 #if __name__ == "__main__":
 #    weibo = Weibo()

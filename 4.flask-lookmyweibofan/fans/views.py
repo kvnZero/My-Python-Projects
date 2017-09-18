@@ -13,10 +13,22 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login Weibo')
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
     form = LoginForm()
-    return render_template('login.html',form = form)
+    uid = None
+    if form.username.data != None and form.password.data != None:
+        weibo.setuser(form.username.data, form.password.data)
+        if form.code.data != "":
+            weibo.setCode(form.code.data)
+        uid = weibo.loginWeibo()
+
+    if uid == None:
+        alerttext = "username or password or code is error"
+    else:
+        alerttext = "login success"
+
+    return render_template('login.html', form = form, alerttext = alerttext)
 
 @app.route('/ajax/getcode/<username>/')
 def getcode(username):

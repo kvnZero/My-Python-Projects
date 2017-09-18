@@ -14,7 +14,7 @@
             </div><br><br>
             <div class="form-group">
                 {{ form.code.label }}{{ form.code(class='form-control', style='width: 70px') }}
-               &nbsp; <img id="codeimages" alt="code pic" src="http://www.baidu.com">
+               &nbsp; <img id="codeimages" alt="code pic" src="">
             </div><br><br>
             {{ form.submit(class='btn btn-default',style='width: 270px') }}
         </form>
@@ -37,12 +37,15 @@
 {% block scripts %}
 {{ super() }}
 <script>
+{% if alerttext %}
+alert('{{ alerttext }}')
+{% endif %}
 $('#username').blur(function (){
     var username = $('#username').val();
     if (username != '') {
         $.get("/ajax/getcode/"+username+"/",function(data){
             if(data != 0){
-                $('#codeimages').src("getcode/");
+                $('#codeimages').attr('src',"getcode/");
             }
         })
     }
