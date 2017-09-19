@@ -30,14 +30,18 @@ def index():
             return render_template('login.html', form=form, alerttext=alerttext)
         else:
             return redirect("/getfans/")
+    else:
+        return render_template('login.html', form=form, alerttext=alerttext)
 
 @app.route('/ajax/getcode/<username>/')
 def getcode(username):
+    if(len(str(username))<6):
+        return "0"
     weibo.setuser(username,"")
     return weibo.checkCode()
 
-@app.route('/getcode/')
-def getcodeimg():
+@app.route('/getcode/<random>')
+def getcodeimg(random=0):
     try:
         result_text = weibo.getCode()
         response = app.make_response(result_text)
@@ -48,9 +52,18 @@ def getcodeimg():
 
 @app.route('/getfans/')
 def getfans():
-    weibo.getFans()
-    return redirect("/showfans/")
+    try:
+        weibo.getFans()
+        return redirect("/showfans/")
+    except ValueError:
+        return "login after get fans.<br><a href='/'>return in index</a>"
 
 @app.route('/showfans/')
 def showfans():
-    return str(weibo.showFans())
+    user = ""
+    list = weibo.showFans()
+    for i in list:
+        str_i = list[i]
+        user += "用户昵称：%s\t用户ID：%s\t关注：%s\t粉丝：%s\t微博：%s\t地址：%s\t关注来源：%s\n<br>" % (str_i[0],str_i[1],str_i[2],str_i[3],str_i[4],str_i[5],str_i[6])
+
+    return str(user)

@@ -14,20 +14,23 @@
             </div><br><br>
             <div class="form-group">
                 {{ form.code.label }}{{ form.code(class='form-control', style='width: 70px') }}
-               &nbsp; <img id="codeimages" alt="code pic" src="">
+               &nbsp; <img id="codeimages" alt="not input" src="">
             </div><br><br>
             {{ form.submit(class='btn btn-default',style='width: 270px') }}
         </form>
         <hr>
         <ol>
             <li>
-                This is a show fans site.
+                This is a show fans home page.
             </li>
             <li>
                 You can filter show you fans~
             </li>
             <li>
-                if login time show code then need input code.
+                If input username after show images then need input code.
+            </li>
+            <li style="color: red">
+                This page is personal use can't Commercialized
             </li>
         </ol>
     </div>
@@ -44,8 +47,10 @@ $('#username').blur(function (){
     var username = $('#username').val();
     if (username != '') {
         $.get("/ajax/getcode/"+username+"/",function(data){
-            if(data != 0){
-                $('#codeimages').attr('src',"getcode/");
+            if(data != "0"){
+                $('#codeimages').attr('src',"getcode/"+Math.random());
+            }else{
+                $('#codeimages').attr('src',"");
             }
         })
     }

@@ -121,7 +121,10 @@ class Weibo():
                    "Referer":"http://weibo.com/%s/fans?cfs=600&relate=fans&t=1&f=1&type=&Pl_Official_RelationFans__88_page=3" % self.uid,
                    "Upgrade-Insecure-Requests":"1",
                    "User-Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36"}
-        maxpage = int(re.findall(r'Pl_Official_RelationFans__88_page=(.+?)#',self.session.get(get_url,headers=Headers).text)[-2])
+        try:
+            maxpage = int(re.findall(r'Pl_Official_RelationFans__88_page=(.+?)#',self.session.get(get_url,headers=Headers).text)[-2])
+        except IndexError:
+            maxpage = 1
         number  = 1
         for page in range(1, maxpage + 1):
             get_url = "http://weibo.com/%s/fans?pids=Pl_Official_RelationFans__88&relate=fans&t=1&f=1&type=&Pl_Official_RelationFans__88_page=%i&ajaxpagelet=1&ajaxpagelet_v6=1" % (self.uid,page)
