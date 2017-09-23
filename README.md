@@ -8,6 +8,6 @@
 		use wechat(itchat) send weibo
 	4.flask-lookmyweibofan:
 		use flask write show weibo fans
-	5.get-tieba-images(writing...):
+	5.get-tieba-images:
 		get tieba images
 

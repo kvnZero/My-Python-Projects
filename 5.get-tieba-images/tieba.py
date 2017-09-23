@@ -1,6 +1,7 @@
 import requests
 import re
 import sys
+import os
 
 class Tieba():
     def __init__(self):
@@ -48,9 +49,11 @@ class Tieba():
         if len(self.images) == 0:
             return self.num
         else:
+            if not os.path.exists("images"):
+                os.makedirs("images")
             for url_n in self.images:
-                image = self.session.get(url).content
-                with open("images/%d.jpg" % self.num, "rb") as file:
+                image = self.session.get(url_n).content
+                with open("images/%d.jpg" % self.num, "wb") as file:
                     file.write(image)
                 self.num += 1
         return self.num
@@ -58,10 +61,22 @@ class Tieba():
     def download_number(self):
         return self.num
 
-
+    def save_images_url(self):
+        if len(self.images) == 0:
+            return False
+        url_text = ""
+        for url in self.images:
+            url_text += url
+        with open("image_url.txt","a") as file:
+            file.write(url_text + "\n")
+        return True
 
 def main():
-    url = sys.argv[1]
+    try:
+        url = sys.argv[1]
+    except IndexError:
+        print("input tieba url")
+        return False
     tieba = Tieba()
     maxpage = tieba.set_tieba_url(url)
     if maxpage == 0:
@@ -70,13 +85,18 @@ def main():
         print ("maxpage: %s" % maxpage)
         print ("is get images url,waiting...")
         tieba.get_tieba_images()
-        print ("images is: %s" % tieba.get_images_number)
+        print ("images is: %s" % tieba.get_images_number())
         choose = input ("doing(1:download images, 2:save url):")
         if choose == "1":
             print("now is download images, waiting...")
             tieba.download_images()
+            print("download %s images" % tieba.download_number())
         else:
-            pass
+            if tieba.save_images_url():
+                print("save in :image_url")
+            else:
+                print("not images")
+
             #write save code
 
 if __name__ == '__main__':
