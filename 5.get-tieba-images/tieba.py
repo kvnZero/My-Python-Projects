@@ -1,5 +1,6 @@
 import requests
 import re
+import sys
 
 class Tieba():
     def __init__(self):
@@ -47,7 +48,7 @@ class Tieba():
         if len(self.images) == 0:
             return self.num
         else:
-            for url_n in self.images):
+            for url_n in self.images:
                 image = self.session.get(url).content
                 with open("images/%d.jpg" % self.num, "rb") as file:
                     file.write(image)
@@ -56,3 +57,27 @@ class Tieba():
 
     def download_number(self):
         return self.num
+
+
+
+def main():
+    url = sys.argv[1]
+    tieba = Tieba()
+    maxpage = tieba.set_tieba_url(url)
+    if maxpage == 0:
+        print ("error url")
+    else:
+        print ("maxpage: %s" % maxpage)
+        print ("is get images url,waiting...")
+        tieba.get_tieba_images()
+        print ("images is: %s" % tieba.get_images_number)
+        choose = input ("doing(1:download images, 2:save url):")
+        if choose == "1":
+            print("now is download images, waiting...")
+            tieba.download_images()
+        else:
+            pass
+            #write save code
+
+if __name__ == '__main__':
+    main()
