@@ -10,6 +10,7 @@ db = SQLAlchemy(app)
 
 class Urls(db.Model):
     __tablename__ = 'urls'
+    id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(256))
-    key = db.Column(db.String(6), unique=True)
+    key = db.Column(db.String(6), unique=True, index=True)
     time = db.Column(db.DateTime)

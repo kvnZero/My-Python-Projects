@@ -6,10 +6,11 @@
 </head>
 <body>
 <div style="text-align: center">
+    <form method="post">
     {{ form.longurl(placeholder="need create long url") }}
     <br><br>
     {{ form.submit() }}
-
+    </form>
     {% if shorturl %}
         <br>
         <label>create url: {{ shorturl }}</label>
