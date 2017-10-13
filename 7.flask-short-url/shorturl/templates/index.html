@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+</head>
+<body>
+<div style="text-align: center">
+    {{ form.longurl(placeholder="need create long url") }}
+    <br><br>
+    {{ form.submit() }}
+
+    {% if shorturl %}
+        <br>
+        <label>create url: {{ shorturl }}</label>
+    {% endif %}
+</div>
+</body>
+</html>
