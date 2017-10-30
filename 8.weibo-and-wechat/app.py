@@ -8,6 +8,8 @@ import json
 import binascii
 import rsa
 import os
+import threading
+import time
 from PIL import Image
 
 
@@ -90,7 +92,16 @@ class Weibo():
     def setCode(self, code):
         self.code = code
     def run(self):
-        pass
+
+        def get_message():
+            while True:
+                message_url = "http://weibo.com/aj/message/getbyid?ajwvr=6&mid=9999999999999999999&uid=2813168532&count=1&_t=0&__rnd=1509288387029"
+                data_text = self.session.get(message_url, headers = self.Header).text
+                print(data_text)
+                time.sleep(5)
+        replyThread = threading.Thread(target=get_message)
+        replyThread.setDaemon(True)
+        replyThread.start()
 
 if __name__ == "__main__":
     username = input("Username:")
@@ -105,7 +116,8 @@ if __name__ == "__main__":
         code = input("Code :")
         weibo.setCode(code)
     weibo.userLogin()
-    itchat.auto_login()
-    itchat.run(blockThread=False)
+    #itchat.auto_login()
+    #itchat.run(blockThread=False)
+    weibo.run()
     while True:
-        weibo.run()
+        pass
