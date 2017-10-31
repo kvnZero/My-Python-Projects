@@ -20,6 +20,7 @@ class Weibo():
         self.password = password
         self.uid = ""
         self.pcid = ""
+        self.code = ""
     def userLogin(self, pagecount=1):
         #login weibo.com
         self.Header = {"User-Agent": "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36"}
@@ -95,9 +96,12 @@ class Weibo():
 
         def get_message():
             while True:
-                message_url = "http://weibo.com/aj/message/getbyid?ajwvr=6&mid=9999999999999999999&uid=2813168532&count=1&_t=0&__rnd=1509288387029"
+                message_url = "http://weibo.com/at/comment?filter_by_author=&pids=Pl_Content_MyAtCommentList&wvr=6&nofilter=1&ajaxpagelet=1&ajaxpagelet_v6=1&__ref=%2Fat%2Fcomment%3Fwvr%3D6%26nofilter%3D1&_t=FM_150928713029618"
+                #message_url = "http://weibo.com/aj/message/getbyid?ajwvr=6&mid=9999999999999999999&uid=2813168532&count=1&_t=0&__rnd=1509288387029"
                 data_text = self.session.get(message_url, headers = self.Header).text
-                print(data_text)
+                #html_re = re.findall(re.compile(r'"html":"(.+?)"}\)</script>'),data_text)[0]
+                html_re = re.findall(re.compile(r'id=(\d+)\\'),data_text)
+                print(html_re)
                 time.sleep(5)
         replyThread = threading.Thread(target=get_message)
         replyThread.setDaemon(True)
