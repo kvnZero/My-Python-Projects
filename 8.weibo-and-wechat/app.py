@@ -96,21 +96,48 @@ class Weibo():
 
         def get_message():
             while True:
-                message_url = "http://weibo.com/messages?leftnav=1&wvr=6&pids=plc_main&ajaxpagelet=1&ajaxpagelet_v6=1&__ref=%2Fmessages%3Fleftnav%3D1%26wvr%3D6&_t=FM_150945936556070"
+                # message_url = "http://weibo.com/aj/message/getbyid?ajwvr=6&mid=9999999999999999999&uid=%s&count=1&_t=0&__rnd=1509288387029" % id
+
+                #message_url = "http://weibo.com/messages?leftnav=1&wvr=6&pids=plc_main&ajaxpagelet=1&ajaxpagelet_v6=1&__ref=%2Fmessages%3Fleftnav%3D1%26wvr%3D6&_t=FM_150945936556070"
+                message_url = "http://weibo.com/at/comment?filter_by_author=&pids=Pl_Content_MyAtCommentList&wvr=6&nofilter=1&ajaxpagelet=1&ajaxpagelet_v6=1&__ref=%2Fat%2Fcomment%3Fwvr%3D6%26nofilter%3D1&_t=FM_150928713029618"
+
                 data_text = self.session.get(message_url, headers = self.Header).text
-                html_re = re.findall(re.compile(r'uid=(\d+)&name'),data_text)
+                #html_re = re.findall(re.compile(r'uid=(\d+)&name'),data_text)
+                html_re = re.findall(re.compile(r'object_id=(\d+)'), data_text)
+
                 print(html_re)
                 for id in html_re:
                     print(id)
-                    message_url = "http://weibo.com/aj/message/getbyid?ajwvr=6&mid=9999999999999999999&uid=%s&count=1&_t=0&__rnd=1509288387029" % id
-                    data_text = self.session.get(message_url, headers=self.Header).text
-                    try:
-                        content_re = re.findall(re.compile(r'page\\">(.+?)<\\/p>'), data_text)[0]
-                        print(content_re)
-                    except IndexError:
-                        print("%s:pass" % id)
 
-#                    print(data_text)
+                    good_url = "https://weibo.com/aj/v6/like/objectlike?ajwvr=6&__rnd=1509554960838"
+                    good_data = {"location":"v6_atcomment",
+                                "object_id":id,
+                                "object_type":"comment",
+                                "_t":"0"}
+                    self.Header = {"Accept":"*/*",
+                                "Accept-Encoding":"gzip, deflate",
+                                "Accept-Language":"zh-CN,zh;q=0.8",
+                                "Connection":"keep-alive",
+                                "Content-Length":"230",
+                                "Content-Type":"application/x-www-form-urlencoded",
+                                "Host":"weibo.com",
+                                "Origin":"http://weibo.com",
+                                "Referer":"https://weibo.com/at/comment?wvr=6&nofilter=1",
+                                "User-Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36",
+                                "X-Requested-With":"XMLHttpRequest"
+                               }
+                    good_text = self.session.post(good_url, good_data, headers = self.Header).text
+                    print(good_text)
+                    #message_url = "http://weibo.com/aj/message/getbyid?ajwvr=6&mid=9999999999999999999&uid=%s&count=1&_t=0&__rnd=1509288387029" % id
+                    #message_url = "http://weibo.com/at/comment?filter_by_author=&pids=Pl_Content_MyAtCommentList&wvr=6&nofilter=1&ajaxpagelet=1&ajaxpagelet_v6=1&__ref=%2Fat%2Fcomment%3Fwvr%3D6%26nofilter%3D1&_t=FM_150928713029618"
+                    #data_text = self.session.get(message_url, headers=self.Header).text
+                    #try:
+                    #    content_re = re.findall(re.compile(r'page\\">(.+?)<\\/p>'), data_text)[0]
+                    #    print(content_re)
+                    #except IndexError:
+                    #    print("%s:pass" % id)
+
+#                    #print(data_text)
                 time.sleep(5)
         replyThread = threading.Thread(target=get_message)
         replyThread.setDaemon(True)
