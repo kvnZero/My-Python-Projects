@@ -24,7 +24,7 @@ class Tieba():
         else:
             self.url = url
             result_text = self.session.get(self.url).text
-            result = re.findall(r'<span class="red">([0-9])</span>页</li>',result_text)
+            result = re.findall(r'<span class="red">([0-9]+)</span>',result_text)
             self.maxpage = result[0]
         return self.maxpage
 
