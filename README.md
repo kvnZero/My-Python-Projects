@@ -16,3 +16,5 @@
 		use for: someone using your computer or stolen
 	7.flask-short-url:
 		use flask : create short url site
+	8.git-to-text-play:
+		git to text and play
