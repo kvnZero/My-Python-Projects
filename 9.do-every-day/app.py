@@ -120,7 +120,7 @@ class xixunyun():
         def _start():
             now = datetime.utcnow()
             self.login_xixun("z15f3515", "xusong")
-            if self.playcard(address=user.address, latitude=user.latitude, longitude=user.longitude) == True:
+            if self.playcard(address="广东省深圳市龙华区东环一路靠近广发银行", latitude="22.645547", longitude="114.037166") == True:
                 firstDayWeekDay, monthRange = calendar.monthrange(now.year, now.month)
                 lastday = date(year=now.year, month=now.month, day=monthRange)
                 if lastday.day == now.day:
