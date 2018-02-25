@@ -1,3 +1,4 @@
+#-- coding: utf-8 --
 import requests
 import json
 from datetime import datetime, date
@@ -5,6 +6,7 @@ import random
 import calendar
 from xml.dom.minidom import parse
 import xml.dom.minidom
+import sys
 session = requests.session()
 
 class xixunyun():
@@ -27,10 +29,10 @@ class xixunyun():
                 "key":"y4HK8b3c3sQ0q6DqBwXgglx8NYMAXFW%2B",
         }
         try:
-            data = self.session.post("https://api.xixunyun.com/login/api?platform=android&version=3.3.1&token=01c47ce30786a42cc4358c61ff02cf11&entrance_year=0&graduate_year=0",data=post_data,verify=True)
+            data = self.session.post("https://api.xixunyun.com/login/api?platform=android&version=3.3.1&token=01c47ce30786a42cc4358c61ff02cf11&entrance_year=0&graduate_year=0",data=post_data,verify=True).text
         except TimeoutError:
-            data = False
-        json_data = json.loads(data.text)
+            data = ""
+        json_data = json.loads(data)
         try:
             self.token = json_data['data']['token']
             self.user_id = json_data['data']['user_id']
@@ -76,9 +78,9 @@ class xixunyun():
         else:
             return False
     def get_weekreport(self):
-        self.collection = xml.dom.minidom.parse("xixunyun/erport.xml").documentElement
+        self.collection = xml.dom.minidom.parse(sys.path[0]+"/report/report.xml").documentElement
         report_i = self.collection.getElementsByTagName("row")
-        report = typeya = alltext = gettext = questext = ""
+        typeya = alltext = gettext = questext = ""
         while typeya != "week":
             report = report_i[random.randint(0,len(report_i))]
             typeya = report.getElementsByTagName('type')[0].childNodes[0].data
@@ -96,9 +98,9 @@ class xixunyun():
         return (alltext,gettext,questext)
 
     def get_monthreport(self):
-        self.collection = xml.dom.minidom.parse("xixunyun/erport.xml").documentElement
+        self.collection = xml.dom.minidom.parse(sys.path[0]+"/report/report.xml").documentElement
         report_i = self.collection.getElementsByTagName("row")
-        report = typeya = alltext = gettext = nexttext = ""
+        typeya = alltext = gettext = nexttext = ""
         while typeya != "month":
             report = report_i[random.randint(0,len(report_i))]
             typeya = report.getElementsByTagName('type')[0].childNodes[0].data
@@ -117,39 +119,37 @@ class xixunyun():
 
 
     def run(self,lock=False):
-        def _start():
-            now = datetime.utcnow()
-            self.login_xixun("z15f3515", "xusong")
-            if self.playcard(address="广东省深圳市龙华区东环一路靠近广发银行", latitude="22.645547", longitude="114.037166") == True:
-                firstDayWeekDay, monthRange = calendar.monthrange(now.year, now.month)
-                lastday = date(year=now.year, month=now.month, day=monthRange)
-                if lastday.day == now.day:
-                    alltext, gettext, nextext = self.get_monthreport()
-                    self.write_month("%s/%s/%s" % (now.year, now.month, now.day),alltext,gettext,nextext)
-                else:
-                    if date.weekday(date.today()) == 6:
-                        alltext, gettext, questext = self.get_weekreport()
-                        self.write_week("%s/%s/%s" % (now.year, now.month, now.day),alltext,gettext,questext)
-        _start()
-
+        now = datetime.utcnow()
+        self.login_xixun("z15f3515", "xusong")
+        if self.playcard(address="广东省深圳市龙华区东环一路靠近广发银行", latitude="22.645547", longitude="114.037166") == True:
+            firstDayWeekDay, monthRange = calendar.monthrange(now.year, now.month)
+            lastday = date(year=now.year, month=now.month, day=monthRange)
+            if lastday.day == now.day:
+                alltext, gettext, nextext = self.get_monthreport()
+                self.write_month("%s/%s/%s" % (now.year, now.month, now.day),alltext,gettext,nextext)
+            else:
+                if date.weekday(date.today()) == 6:
+                    alltext, gettext, questext = self.get_weekreport()
+                    self.write_week("%s/%s/%s" % (now.year, now.month, now.day),alltext,gettext,questext)
 def xixunyun_playcard():
-    #wait..
-    pass
+    _xixunyun = xixunyun()
+    _xixunyun.run()
 
 def today_weather(city_id):
     API_KEY = "svbgsoto2mk6fvna"
     USER_ID = "U90560AB9B"
     for city in city_id:
         url = "https://api.seniverse.com/v3/weather/now.json?key=svbgsoto2mk6fvna&location=%s&language=zh-Hans&unit=c" % city
-        json_text = json.loads(session.get(url).text) 
+        json_text = json.loads(session.get(url).text)
         temperature = json_text['results'][0]['now']['temperature']
         text = json_text['results'][0]['now']['text']
-        address = json_text['results'][0]['loaction']['name']
+        address = json_text['results'][0]['location']['name']
         status = ""
         tips = ""
         print("In %s is very %s,and %s, temperature:%s, tips:%s" % (address, status, text, temperature, tips))
 def main():
     today_weather(['W7VHZEYSJ2W6'])
+    xixunyun_playcard()
 
 if __name__ == "__main__":
     main()
