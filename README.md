@@ -12,3 +12,5 @@
 		get tieba images
 	flask-short-url:
 		use flask : create short url site
+	get-weibo-user-photo
+		don't need login can get weibo user 24 photo
