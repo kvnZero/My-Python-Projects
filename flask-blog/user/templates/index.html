@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-8 column">
+			<div class="row clearfix">
+				{% for essay in Essays %}
+				<div class="col-md-12 column">
+					<h2>
+						{{ essay.essay_title }}
+					</h2>
+					<p>
+						{% if(essay.essay_summary) %}
+							{{ essay.essay_summary | safe}}
+						{% else %}
+							{{ essay.essay_content | change_summary }}
+						{% endif %}
+					</p>
+					<p>
+						 <a class="btn" href="/essay/{{ essay.id }}">阅读全文 »</a>
+					</p>
+                    <hr/>
+				</div>	
+				{% endfor %}	                
+			</div>
+		</div>
+		<div class="col-md-4 column">
+			<ul class="nav nav-pills">
+				<li {% if (choose == 'all') %}class="active" {% endif %}>
+					 <a href="{{ url_for('index') }}"> <span class="badge pull-right">{{ allamount }}</span> 全部</a>
+				</li>
+				<li {% if (choose == 'php') %}class="active" {% endif %}>
+					 <a href="/class/php/"> <span class="badge pull-right">{{ phpamount }}</span> PHP</a>
+				</li>
+                <li {% if (choose == 'python') %}class="active" {% endif %}>
+					 <a href="/class/python/"> <span class="badge pull-right">{{ pythonamount }}</span> Python</a>
+				</li>
+			</ul>
+            </br>
+			<div class="row clearfix">
+				<div class="col-md-12 column">
+                	<ul class="list-unstyled">
+						{% for essay in Essays %}
+						<li>
+							<a href="/essay/{{ essay.id }}">{{ essay.essay_title }}</a>
+						</li> 			
+						{% endfor %}		
+					</ul>
+				</div>
+			</div>
+			<div class="row clearfix">
+				<div class="col-md-12 column">
+					<ul class="pagination">
+						<li>
+							 <a href="{{ url_for('index') }}">首页</a>
+						</li>
+						{% for page in page_number %}
+						<li>
+							{% if(choose == 'all') %}
+								<a href="/page/{{ page+1 }}/">{{ page+1 }}</a>	
+							{% else %}
+							<a href="/class/{{ choose }}/page/{{ page+1 }}/">{{ page+1 }}</a>								
+							{% endif %}
+						</li>
+						{%  endfor%}
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div></td>
+  </tr>
+{% endblock %}
